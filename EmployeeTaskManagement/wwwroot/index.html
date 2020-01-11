@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Employee List</title>
+    <link rel="stylesheet" href="lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/site.css" />
+    <script src="lib/jquery/dist/jquery.min.js"></script>
+    <script src="lib/vue/vuejs-datepicker.min.js"></script>
+    <script src="lib/vue/vue.min.js"></script>
+    <script src="lib/vue/axios.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="container">
+            <main role="main" class="pb-3">
+                <div class="text-center">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Name
+                                </th>
+                                <th>
+                                    HiredDate
+                                </th>
+                                <th>
+                                    Tasks
+                                </th>
+                                <th>
+                                    <a href="javascript:void(0);" v-on:click="add()">Add Employee</a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="employee in employees">
+                                <td>
+                                    {{employee | fullName}}
+                                </td>
+                                <td>
+                                    {{employee.hiredDate | dateFormat}}
+                                </td>
+                                <td>
+                                    {{employee.tasks ? employee.tasks.length : 0}}(<a href="javascript:void(0);"
+                                        v-on:click="openTasks(employee)">Show</a>)
+                                </td>
+                                <td>
+                                    <a href="javascript:void(0);" v-on:click="edit(employee)">Edit</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
+        </div>
+
+        <div class="modal fade" id="employeeDetail" tabindex="-1" role="dialog" data-backdrop="static"
+            aria-labelledby="employeeDetailTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="employeeDetailTitle">{{employee | fullName}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    Task Name
+                                </th>
+                                <th>
+                                    Start Time
+                                </th>
+                                <th>
+                                    Deadline
+                                </th>
+                            </tr>
+                            <tr v-for="item in employee.tasks">
+                                <td>{{item.taskName}}</td>
+                                <td>{{item.startTime | dateFormat}}</td>
+                                <td>{{item.deadline | dateFormat}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="employeeEdit" tabindex="-1" role="dialog" data-backdrop="static"
+            aria-labelledby="employeeEditTitle" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="employeeEditTitle">{{ editMode?"Edit":"Add New"}} Employee
+                        </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table>
+                            <tr>
+                                <th>First Name
+                                </th>
+                                <td>
+                                    <input class="form-control" v-model="editForm.firstName" /></td>
+                            </tr>
+                            <tr>
+                                <th>Last Name
+                                </th>
+                                <td>
+                                    <input class="form-control" v-model="editForm.lastName" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Hired Date
+                                </th>
+                                <td>
+                                    <vuejs-datepicker input-class="form-control" v-model="editForm.hiredDate"
+                                        format="dd/MM/yyyy">
+                                    </vuejs-datepicker>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="table">
+                            <tr>
+                                <th>
+                                    Task Name
+                                </th>
+                                <th>
+                                    Start Time
+                                </th>
+                                <th>
+                                    Deadline
+                                </th>
+                                <th>
+                                    <a href="javascript:void(0);" v-on:click="addTask()">Add
+                                        Task</a>
+                                </th>
+                            </tr>
+                            <tr v-for="item in editForm.tasks">
+                                <td><input class="form-control" v-model="item.taskName" /></td>
+                                <td>
+                                    <vuejs-datepicker input-class="form-control" v-model="item.startTime"
+                                        format="dd/MM/yyyy">
+                                    </vuejs-datepicker>
+                                </td>
+                                <td>
+                                    <vuejs-datepicker input-class="form-control" v-model="item.deadline"
+                                        format="dd/MM/yyyy">
+                                    </vuejs-datepicker>
+                                </td>
+                                <td>
+                                    <a href="javascript:void(0);" v-on:click="removeTask(item)">Remove</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <a href="javascript:void(0);" v-on:click="submit" class="btn btn-primary">
+                            {{ editMode ? "Save changes" : "Create" }}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="lib/jquery/dist/jquery.min.js"></script>
+    <script src="lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/site.js"></script>
+</body>
+
+</html>
